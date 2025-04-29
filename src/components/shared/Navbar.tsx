@@ -113,6 +113,9 @@ const Navbar = () => {
                   <Button className="bg-[#F83A26] hover:bg-[#F83A26]/90" asChild>
                     <Link to="/register">Register</Link>
                   </Button>
+                  <Button variant="outline" size="sm" className="ml-1" asChild>
+                    <Link to="/admin/login">Admin</Link>
+                  </Button>
                 </div>
               )}
             </div>

@@ -234,6 +234,12 @@ const Login = () => {
               Back to Home
             </Link>
           </div>
+          <div className="text-center text-sm text-gray-500 mt-2">
+            Are you an administrator?{' '}
+            <Link to="/admin/login" className="text-travel-blue hover:underline">
+              Admin Login
+            </Link>
+          </div>
         </CardFooter>
       </Card>
     </div>
