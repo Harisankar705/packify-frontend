@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { authService, userService } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
@@ -9,7 +8,7 @@ interface AuthContextProps {
   isAuthenticated: boolean;
   isAdmin: boolean;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, isAdminLogin?: boolean) => Promise<void>;
   register: (userData: any) => Promise<void>;
   googleLogin: (token: string) => Promise<void>;
   logout: () => void;
@@ -61,10 +60,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadUser();
   }, [token]);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, isAdminLogin = false) => {
     try {
       const response = await authService.login({ email, password });
       const { token: authToken, user: userData } = response.data;
+      
+      // For admin login, check if user has admin role
+      if (isAdminLogin && userData.role !== 'admin') {
+        throw new Error('Unauthorized: Admin access required');
+      }
       
       setToken(authToken);
       setUser(userData);
@@ -80,7 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Login error', error);
       toast({
         title: 'Error',
-        description: error.response?.data?.message || 'Login failed',
+        description: error.response?.data?.message || error.message || 'Login failed',
         variant: 'destructive',
       });
       throw error;
