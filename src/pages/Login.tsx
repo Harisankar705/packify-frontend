@@ -41,7 +41,6 @@ const Login = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { handleGoogleAuth } = useGoogleAuth();
-  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
