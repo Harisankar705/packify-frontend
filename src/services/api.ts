@@ -1,12 +1,11 @@
 
 import axios from 'axios';
 
-// Create axios instance with base URL
 const api = axios.create({
   baseURL: 'http://localhost:5000/api',
+  withCredentials: true, 
 });
 
-// Add request interceptor to add token to requests
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -20,7 +19,6 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor to handle common errors
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -35,14 +33,12 @@ api.interceptors.response.use(
   }
 );
 
-// Auth services
 export const authService = {
   register: (userData: any) => api.post('/auth/register', userData),
   login: (credentials: any) => api.post('/auth/login', credentials),
   googleLogin: (token: string) => api.post('/auth/google', { token }),
 };
 
-// User services
 export const userService = {
   getProfile: () => api.get('/users/me'),
   updateProfile: (userData: any) => api.put('/users/me', userData),

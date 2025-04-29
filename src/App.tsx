@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 
-// Pages
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -16,7 +15,6 @@ import Profile from "@/pages/Profile";
 import Bookings from "@/pages/Bookings";
 import NotFound from "@/pages/NotFound";
 
-// Admin Pages
 import AdminLayout from "@/pages/Admin/AdminLayout";
 import Dashboard from "@/pages/Admin/Dashboard";
 import ManagePackages from "@/pages/Admin/ManagePackages";
@@ -34,18 +32,15 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/packages" element={<Packages />} />
             <Route path="/packages/:id" element={<PackageDetail />} />
             
-            {/* Protected Routes */}
             <Route path="/profile" element={<Profile />} />
             <Route path="/bookings" element={<Bookings />} />
             
-            {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="packages" element={<ManagePackages />} />
@@ -55,7 +50,6 @@ const App = () => (
               <Route path="users" element={<UsersOverview />} />
             </Route>
             
-            {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -38,7 +38,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isAuthenticated = !!token && !!user;
   const isAdmin = user?.role === 'admin';
 
-  // Load user from localStorage on mount
   useEffect(() => {
     const loadUser = async () => {
       if (token) {
