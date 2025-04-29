@@ -25,7 +25,7 @@ const AdminLayout = () => {
               {/* Sidebar */}
               <div className="lg:col-span-1">
                 <div className="bg-white shadow rounded-lg p-4 sticky top-24">
-                  <h2 className="text-xl font-bold mb-4 px-3">Admin</h2>
+                  <h2 className="text-xl font-bold mb-4 px-3 text-[#2D2942]">Admin</h2>
                   <nav className="space-y-1">
                     {navLinks.map((link) => (
                       <NavLink
@@ -36,7 +36,7 @@ const AdminLayout = () => {
                           cn(
                             "flex items-center px-3 py-2 rounded-md text-sm font-medium",
                             isActive
-                              ? "bg-travel-blue text-white"
+                              ? "bg-[#2D2942] text-white"
                               : "text-gray-700 hover:bg-gray-100"
                           )
                         }
