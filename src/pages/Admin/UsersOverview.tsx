@@ -15,7 +15,7 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { User } from '@/types';
 
 // Mocked user data since user management is not in API
-const mockUsers = [
+const mockUsers: User[] = [
   {
     _id: '1',
     name: 'John Doe',
