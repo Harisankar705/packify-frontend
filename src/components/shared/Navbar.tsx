@@ -31,7 +31,7 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center">
-              <span className="text-travel-blue text-xl font-bold">Roam & Discover</span>
+              <span className="text-[#2D2942] font-bold text-xl">Packify</span>
             </Link>
           </div>
 
@@ -41,8 +41,8 @@ const Navbar = () => {
                 to="/"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
                   location.pathname === '/'
-                    ? 'text-travel-blue'
-                    : 'text-gray-600 hover:text-travel-blue'
+                    ? 'text-[#F83A26]'
+                    : 'text-gray-600 hover:text-[#F83A26]'
                 }`}
               >
                 Home
@@ -51,8 +51,8 @@ const Navbar = () => {
                 to="/packages"
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
                   location.pathname === '/packages'
-                    ? 'text-travel-blue'
-                    : 'text-gray-600 hover:text-travel-blue'
+                    ? 'text-[#F83A26]'
+                    : 'text-gray-600 hover:text-[#F83A26]'
                 }`}
               >
                 Packages
@@ -62,8 +62,8 @@ const Navbar = () => {
                   to="/admin"
                   className={`px-3 py-2 rounded-md text-sm font-medium ${
                     location.pathname.startsWith('/admin')
-                      ? 'text-travel-blue'
-                      : 'text-gray-600 hover:text-travel-blue'
+                      ? 'text-[#F83A26]'
+                      : 'text-gray-600 hover:text-[#F83A26]'
                   }`}
                 >
                   Admin
@@ -80,7 +80,7 @@ const Navbar = () => {
                         {user?.profilePic ? (
                           <AvatarImage src={user.profilePic} alt={user.name} />
                         ) : null}
-                        <AvatarFallback className="bg-travel-blue text-white">
+                        <AvatarFallback className="bg-[#2D2942] text-white">
                           {user?.name ? getInitials(user.name) : <User className="h-4 w-4" />}
                         </AvatarFallback>
                       </Avatar>
@@ -110,7 +110,7 @@ const Navbar = () => {
                   <Button variant="outline" asChild>
                     <Link to="/login">Login</Link>
                   </Button>
-                  <Button asChild>
+                  <Button className="bg-[#F83A26] hover:bg-[#F83A26]/90" asChild>
                     <Link to="/register">Register</Link>
                   </Button>
                 </div>

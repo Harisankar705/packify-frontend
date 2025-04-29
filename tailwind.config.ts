@@ -63,10 +63,10 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				travel: {
-					'blue-light': '#4285F4',
-					'blue': '#1A73E8',
-					'teal': '#00BFA5',
+				packify: {
+					'purple': '#2D2942',
+					'red': '#F83A26',
+					'yellow': '#FFC344',
 				}
 			},
 			borderRadius: {

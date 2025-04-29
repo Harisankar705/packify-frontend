@@ -71,7 +71,7 @@ const Index = () => {
       <div className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Featured Travel Packages</h2>
+            <h2 className="text-3xl font-bold text-[#2D2942]">Featured Travel Packages</h2>
             <p className="mt-4 text-xl text-gray-600">
               Explore our most popular destinations
             </p>
@@ -96,7 +96,7 @@ const Index = () => {
           )}
           
           <div className="text-center mt-12">
-            <Button asChild size="lg">
+            <Button className="bg-[#F83A26] hover:bg-[#F83A26]/90" asChild size="lg">
               <a href="/packages">View All Packages</a>
             </Button>
           </div>
@@ -104,14 +104,14 @@ const Index = () => {
       </div>
       
       {/* Call to Action */}
-      <div className="bg-travel-blue py-16">
+      <div className="bg-[#2D2942] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white">Ready for your next adventure?</h2>
           <p className="mt-4 text-xl text-white/90 max-w-2xl mx-auto">
             Sign up now to receive exclusive offers and updates on new travel packages.
           </p>
           <div className="mt-8">
-            <Button asChild variant="secondary" size="lg" className="mr-4">
+            <Button asChild variant="secondary" size="lg" className="mr-4 bg-[#FFC344] hover:bg-[#FFC344]/90 text-[#2D2942]">
               <a href="/register">Sign Up Now</a>
             </Button>
             <Button asChild variant="outline" className="bg-transparent text-white border-white hover:bg-white/10">
@@ -125,7 +125,7 @@ const Index = () => {
       <div className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Popular Destinations</h2>
+            <h2 className="text-3xl font-bold text-[#2D2942]">Popular Destinations</h2>
             <p className="mt-4 text-xl text-gray-600">
               Explore these amazing locations
             </p>
