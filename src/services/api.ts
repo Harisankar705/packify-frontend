@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_BACKEND,
   withCredentials: true, 
 });
 
@@ -42,6 +42,12 @@ export const authService = {
 
 export const userService = {
   getProfile: () => api.get('/users/me'),
+  uploadImage: (formData: FormData) =>
+    api.post('/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
   getUsers: () => api.get('/users/getallusers'),
   updateProfile: (userData: any) => api.put('/users/me', userData),
 };

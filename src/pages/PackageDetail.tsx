@@ -200,13 +200,14 @@ const PackageDetail = () => {
       <Navbar />
       
       <div className="bg-gray-50 flex-grow">
-        {/* Hero Image */}
         <div className="relative h-96">
-          <img
-            src={`https://source.unsplash.com/featured/?${travelPackage.to.replace(' ', '')},travel`}
-            alt={travelPackage.to}
-            className="w-full h-full object-cover"
-          />
+        <img
+  src={
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'
+  }
+  alt={travelPackage.to || 'Travel Destination'}
+  className="w-full h-full object-cover"
+/>
           <div className="absolute inset-0 bg-black/40 flex items-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
               <h1 className="text-white text-4xl md:text-5xl font-bold">

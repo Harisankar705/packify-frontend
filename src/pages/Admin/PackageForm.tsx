@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -25,22 +24,34 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { format } from 'date-fns';
+import { format, addDays, isBefore, isAfter } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
+// Get today's date at the start of the day for consistent comparison
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
 const packageFormSchema = z.object({
-  from: z.string().min(2, { message: 'From location must be at least 2 characters' }),
-  to: z.string().min(2, { message: 'To location must be at least 2 characters' }),
-  startDate: z.date({ required_error: 'Start date is required' }),
+  from: z.string().min(2, { message: 'From location must be at least 2 characters' }).trim(),
+  to: z.string().min(2, { message: 'To location must be at least 2 characters' }).trim(),
+  startDate: z.date({ required_error: 'Start date is required' })
+    .refine((date) => isAfter(date, today) || date.getTime() === today.getTime(), {
+      message: 'Start date must be today or a future date',
+    }),
   endDate: z.date({ required_error: 'End date is required' }),
-  basePrice: z.coerce.number().positive({ message: 'Base price must be positive' }),
+  basePrice: z.coerce.number()
+    .positive({ message: 'Base price must be positive' })
+    .min(1, { message: 'Base price must be at least 1' }),
   services: z.object({
     food: z.boolean().default(false),
     accommodation: z.boolean().default(false),
   }),
+}).refine((data) => isAfter(data.endDate, data.startDate), {
+  message: 'End date must be after start date',
+  path: ['endDate'], // This shows the error on the endDate field
 });
 
 type PackageFormValues = z.infer<typeof packageFormSchema>;
@@ -58,12 +69,13 @@ const PackageForm = () => {
     defaultValues: {
       from: '',
       to: '',
-      basePrice: 0,
+      basePrice: undefined, // Changed from 0 to undefined for better validation UX
       services: {
         food: false,
         accommodation: false,
       },
     },
+    mode: 'onBlur', // Validate on blur for better user experience
   });
 
   useEffect(() => {
@@ -141,6 +153,11 @@ const PackageForm = () => {
     );
   }
 
+  // Show end date error if both dates are selected but end date is before or equal to start date
+  const startDate = form.watch("startDate");
+  const endDate = form.watch("endDate");
+  const hasDateError = startDate && endDate && !isAfter(endDate, startDate);
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{isEditMode ? 'Edit Package' : 'Add New Package'}</h1>
@@ -159,7 +176,7 @@ const PackageForm = () => {
                   name="from"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>From</FormLabel>
+                      <FormLabel>From <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="Origin city" {...field} />
                       </FormControl>
@@ -173,7 +190,7 @@ const PackageForm = () => {
                   name="to"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>To</FormLabel>
+                      <FormLabel>To <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="Destination city" {...field} />
                       </FormControl>
@@ -190,7 +207,7 @@ const PackageForm = () => {
                   name="startDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Start Date</FormLabel>
+                      <FormLabel>Start Date <span className="text-red-500">*</span></FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -215,11 +232,15 @@ const PackageForm = () => {
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
+                            disabled={(date) => isBefore(date, today)}
                             initialFocus
                             className={cn("p-3 pointer-events-auto")}
                           />
                         </PopoverContent>
                       </Popover>
+                      <FormDescription>
+                        Must be today or a future date
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -230,7 +251,7 @@ const PackageForm = () => {
                   name="endDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>End Date</FormLabel>
+                      <FormLabel>End Date <span className="text-red-500">*</span></FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -238,7 +259,8 @@ const PackageForm = () => {
                               variant={"outline"}
                               className={cn(
                                 "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                !field.value && "text-muted-foreground",
+                                hasDateError && "border-red-500"
                               )}
                             >
                               {field.value ? (
@@ -256,14 +278,25 @@ const PackageForm = () => {
                             selected={field.value}
                             onSelect={field.onChange}
                             disabled={(date) => {
+                              // Disable dates before today
+                              if (isBefore(date, today)) return true;
+                              
+                              // If start date is selected, disable dates before or equal to start date
                               const startDate = form.getValues("startDate");
-                              return startDate ? date < startDate : false;
+                              if (startDate) {
+                                return isBefore(date, addDays(startDate, 1));
+                              }
+                              
+                              return false;
                             }}
                             initialFocus
                             className={cn("p-3 pointer-events-auto")}
                           />
                         </PopoverContent>
                       </Popover>
+                      <FormDescription>
+                        Must be after the start date
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -276,17 +309,23 @@ const PackageForm = () => {
                 name="basePrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Base Price (USD)</FormLabel>
+                    <FormLabel>Base Price (USD) <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
                         placeholder="0.00" 
                         step="0.01" 
                         {...field} 
+                        onChange={(e) => {
+                          // Only accept numbers and convert empty string to undefined
+                          const value = e.target.value;
+                          field.onChange(value === "" ? undefined : parseFloat(value));
+                        }}
+                        value={field.value === undefined ? "" : field.value}
                       />
                     </FormControl>
                     <FormDescription>
-                      Enter the base price for the package in USD
+                      Enter the base price for the package in USD (minimum 1.00)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

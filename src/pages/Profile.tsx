@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -21,6 +20,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/shared/Navbar';
 import Footer from '@/components/shared/Footer';
 import ProtectedRoute from '@/components/shared/ProtectedRoute';
+import { userService } from '@/services/api';
 
 const profileSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
@@ -34,6 +34,7 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 const Profile = () => {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [previewImage, setPreviewImage] = useState(user?.profilePic || '');
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -44,6 +45,20 @@ const Profile = () => {
       profilePic: user?.profilePic || '',
     },
   });
+
+  // Reset form when user data changes (including after initial load)
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        name: user.name || '',
+        email: user.email || '',
+        address: user.address || '',
+        profilePic: user.profilePic || '',
+      });
+      
+      setPreviewImage(user.profilePic || '');
+    }
+  }, [user, form]);
 
   const onSubmit = async (data: ProfileFormValues) => {
     try {
@@ -68,11 +83,11 @@ const Profile = () => {
     <ProtectedRoute>
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        
+
         <div className="flex-grow bg-gray-50 py-10">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-bold mb-6">My Profile</h1>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Profile Picture Card */}
               <Card className="md:col-span-1">
@@ -81,8 +96,8 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent className="flex flex-col items-center space-y-4">
                   <Avatar className="h-24 w-24">
-                    {user?.profilePic ? (
-                      <AvatarImage src={user.profilePic} alt={user.name} />
+                    {previewImage ? (
+                      <AvatarImage src={previewImage} alt={user?.name || 'Profile'} />
                     ) : null}
                     <AvatarFallback className="bg-travel-blue text-white text-xl">
                       {user?.name ? getInitials(user.name) : 'U'}
@@ -94,7 +109,7 @@ const Profile = () => {
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Edit Profile Card */}
               <Card className="md:col-span-2">
                 <CardHeader>
@@ -116,7 +131,7 @@ const Profile = () => {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={form.control}
                         name="email"
@@ -131,7 +146,7 @@ const Profile = () => {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={form.control}
                         name="address"
@@ -145,24 +160,45 @@ const Profile = () => {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={form.control}
                         name="profilePic"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Profile Picture URL</FormLabel>
+                            <FormLabel>Profile Picture</FormLabel>
                             <FormControl>
-                              <Input {...field} placeholder="https://example.com/image.jpg" />
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onloadend = () => {
+                                      setPreviewImage(reader.result as string);
+                                    };
+                                    reader.readAsDataURL(file);
+
+                                    const formData = new FormData();
+                                    formData.append('file', file);
+
+                                    try {
+                                      const res = await userService.uploadImage(formData);
+                                      field.onChange(res.data.url);
+                                    } catch (error) {
+                                      console.error('Error uploading image:', error);
+                                    }
+                                  }
+                                }}
+                              />
                             </FormControl>
-                            <FormDescription>
-                              Enter a URL for your profile picture
-                            </FormDescription>
+                            <FormDescription>Upload a new profile picture.</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      
+
                       <Button type="submit" disabled={loading}>
                         {loading ? 'Saving...' : 'Save Changes'}
                       </Button>
@@ -173,7 +209,7 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        
+
         <Footer />
       </div>
     </ProtectedRoute>

@@ -23,11 +23,14 @@ const PackageCard = ({ travelPackage }: PackageCardProps) => {
   return (
     <Card className="overflow-hidden card-hover">
       <div className="h-48 bg-gray-200 relative">
-        <img
-          src={`https://source.unsplash.com/featured/?${travelPackage.to.replace(' ', '')},travel`}
-          alt={travelPackage.to}
-          className="w-full h-full object-cover"
-        />
+      <img
+  src={
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'
+  }
+  alt={travelPackage.to || 'Travel Destination'}
+  className="w-full h-full object-cover"
+/>
+
         <Badge
           className={`absolute top-3 right-3 ${
             statusColors[status as keyof typeof statusColors]
