@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
-import { bookingService } from '@/services/api';
-import { Booking, FormattedBooking } from '@/types';
+import { bookingService, packageService } from '@/services/api';
+import { Booking, FormattedBooking, TravelPackage } from '@/types';
 import { formatDate, getBookingStatus } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -20,13 +19,29 @@ const Bookings = () => {
     const fetchBookings = async () => {
       try {
         setLoading(true);
-        const response = await bookingService.getAllBookings();
+        const bookingsResponse = await bookingService.getUserBookings();
+        console.log('Bookings response:', bookingsResponse);
         
-        // Add status to each booking based on package dates
-        const formattedBookings = response.data.map((booking: Booking) => {
+        const packageIds = [...new Set(bookingsResponse.data.map((booking: Booking) => booking.package))];
+        const packageDetails: Record<string, TravelPackage> = {};
+        
+        await Promise.all(
+          packageIds.map(async (packageId) => {
+            try {
+              const packageResponse = await packageService.getPackageById(packageId);
+              packageDetails[packageId] = packageResponse.data;
+            } catch (error) {
+              console.error(`Error fetching package details for ${packageId}:`, error);
+            }
+          })
+        );
+        
+        const formattedBookings = bookingsResponse.data.map((booking: Booking) => {
           return {
             ...booking,
             status: getBookingStatus(booking),
+            packageDetails: packageDetails[booking.package],
+            totalPrice: calculateTotalPrice(packageDetails[booking.package], booking.services)
           };
         });
         
@@ -40,6 +55,22 @@ const Bookings = () => {
 
     fetchBookings();
   }, []);
+  
+  const calculateTotalPrice = (packageDetails: TravelPackage, services: { food: boolean, accommodation: boolean }) => {
+    if (!packageDetails) return 0;
+    
+    let price = packageDetails.basePrice;
+    
+    if (services.food && packageDetails.services.food) {
+      price += packageDetails.basePrice * 0.2;
+    }
+    
+    if (services.accommodation && packageDetails.services.accommodation) {
+      price += packageDetails.basePrice * 0.3;
+    }
+    
+    return price;
+  };
 
   const filteredBookings = activeTab === 'all' 
     ? bookings 
@@ -49,6 +80,7 @@ const Bookings = () => {
     upcoming: 'bg-travel-blue text-white',
     active: 'bg-green-500 text-white',
     completed: 'bg-gray-500 text-white',
+    pending: 'bg-yellow-500 text-white',
   };
 
   return (
@@ -66,6 +98,7 @@ const Bookings = () => {
                 <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
                 <TabsTrigger value="active">Active</TabsTrigger>
                 <TabsTrigger value="completed">Completed</TabsTrigger>
+                <TabsTrigger value="pending">Pending</TabsTrigger>
               </TabsList>
               
               <TabsContent value={activeTab} className="space-y-6">
@@ -79,9 +112,13 @@ const Bookings = () => {
                       <CardHeader className="pb-2">
                         <div className="flex items-center justify-between">
                           <CardTitle className="text-lg">
-                            {booking.packageDetails?.from} to {booking.packageDetails?.to}
+                            {booking.packageDetails ? (
+                              `${booking.packageDetails.from} to ${booking.packageDetails.to}`
+                            ) : (
+                              `Booking ID: ${booking._id}`
+                            )}
                           </CardTitle>
-                          <Badge className={statusColors[booking.status as keyof typeof statusColors]}>
+                          <Badge className={statusColors[booking.status as keyof typeof statusColors] || 'bg-gray-400 text-white'}>
                             {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                           </Badge>
                         </div>
@@ -91,26 +128,34 @@ const Bookings = () => {
                           <div>
                             <div className="text-sm text-gray-500">Travel Dates</div>
                             <div>
-                              {booking.packageDetails && (
+                              {booking.packageDetails ? (
                                 <>
                                   {formatDate(booking.packageDetails.startDate)} - {formatDate(booking.packageDetails.endDate)}
                                 </>
+                              ) : (
+                                <span className="text-gray-500">Details not available</span>
                               )}
                             </div>
                           </div>
                           <div>
                             <div className="text-sm text-gray-500">Selected Services</div>
                             <div className="flex gap-2 flex-wrap">
-                              {booking.selectedServices.food && <Badge variant="outline">Food</Badge>}
-                              {booking.selectedServices.accommodation && <Badge variant="outline">Accommodation</Badge>}
-                              {!booking.selectedServices.food && !booking.selectedServices.accommodation && (
+                              {booking.services.food && <Badge variant="outline">Food</Badge>}
+                              {booking.services.accommodation && <Badge variant="outline">Accommodation</Badge>}
+                              {!booking.services.food && !booking.services.accommodation && (
                                 <span className="text-gray-500">No additional services</span>
                               )}
                             </div>
                           </div>
                           <div>
+                            <div className="text-sm text-gray-500">Booking Date</div>
+                            <div>{formatDate(booking.bookingDate)}</div>
+                          </div>
+                          <div>
                             <div className="text-sm text-gray-500">Total Price</div>
-                            <div className="font-bold text-travel-blue">${booking.totalPrice}</div>
+                            <div className="font-bold text-travel-blue">
+                              ${booking.totalPrice || 'N/A'}
+                            </div>
                           </div>
                         </div>
                       </CardContent>

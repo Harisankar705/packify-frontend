@@ -9,6 +9,7 @@ interface AuthContextProps {
   isAdmin: boolean;
   loading: boolean;
   login: (email: string, password: string, isAdminLogin?: boolean) => Promise<void>;
+  adminLogin: (email: string, password: string, isAdminLogin?: boolean) => Promise<void>;
   register: (userData: any) => Promise<void>;
   googleLogin: (token: string) => Promise<void>;
   logout: () => void;
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextProps>({
   isAdmin: false,
   loading: true,
   login: async () => {},
+  adminLogin: async () => {},
   register: async () => {},
   googleLogin: async () => {},
   logout: () => {},
@@ -85,6 +87,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       toast({
         title: 'Error',
         description: error.response?.data?.message || error.message || 'Login failed',
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+  const adminLogin = async (email: string, password: string) => {
+    try {
+      const response = await authService.adminLogin({ email, password });
+      const { token: authToken, user: userData } = response.data;
+  
+      setToken(authToken);
+      setUser(userData);
+  
+      localStorage.setItem('token', authToken);
+      localStorage.setItem('user', JSON.stringify(userData));
+  
+      toast({
+        title: 'Success',
+        description: 'Admin logged in successfully!',
+      });
+    } catch (error: any) {
+      console.error('Admin login error', error);
+      toast({
+        title: 'Error',
+        description: error.response?.data?.message || 'Admin login failed',
         variant: 'destructive',
       });
       throw error;
@@ -184,6 +211,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAdmin,
         loading,
         login,
+        adminLogin,
         register,
         googleLogin,
         logout,

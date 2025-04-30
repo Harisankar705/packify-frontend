@@ -24,9 +24,9 @@ export interface TravelPackage {
 export interface Booking {
   _id: string;
   userId: string;
-  packageId: string;
+  package: string;
   packageDetails?: TravelPackage;
-  selectedServices: {
+  services: {
     food: boolean;
     accommodation: boolean;
   };

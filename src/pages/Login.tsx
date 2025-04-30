@@ -50,7 +50,6 @@ const Login = () => {
     },
   });
 
-  // Load Google authentication script
   useEffect(() => {
     const clientId = import.meta.env.VITE_AUTH_GOOGLE_ID;
     if (!clientId) {

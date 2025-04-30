@@ -25,6 +25,7 @@ import {
 const PackageDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [travelPackage, setTravelPackage] = useState<TravelPackage | null>(null);
+  const [existingBooking, setExistingBooking] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [includedServices, setIncludedServices] = useState<{
     food: boolean;
@@ -70,18 +71,15 @@ const PackageDetail = () => {
     fetchPackageDetails();
   }, [id, toast]);
 
-  // Calculate total price when services change
   useEffect(() => {
     if (!travelPackage) return;
     
     let price = travelPackage.basePrice;
     
-    // Add additional cost for food (20% of base price)
     if (includedServices.food && travelPackage.services.food) {
       price += travelPackage.basePrice * 0.2;
     }
     
-    // Add additional cost for accommodation (30% of base price)
     if (includedServices.accommodation && travelPackage.services.accommodation) {
       price += travelPackage.basePrice * 0.3;
     }
@@ -89,6 +87,33 @@ const PackageDetail = () => {
     setTotalPrice(price);
   }, [includedServices, travelPackage]);
 
+  useEffect(() => {
+    const checkExistingBooking = async () => {
+      if (!isAuthenticated || !id) return;
+  
+      try {
+        const response = await bookingService.getUserBookings();
+        const userBookings = response.data;
+  
+        // Check if there is already a booking for the current package by the user
+        const alreadyBooked = userBookings.some(
+          (booking) => booking.package === id && booking.status === 'pending'
+        );
+  
+        setExistingBooking(alreadyBooked);
+      } catch (error) {
+        console.error('Error checking existing bookings:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to check existing bookings',
+          variant: 'destructive',
+        });
+      }
+    };
+  
+    checkExistingBooking();
+  }, [id, isAuthenticated, toast]);
+  
   const handleServiceChange = (service: 'food' | 'accommodation') => {
     setIncludedServices((prev) => ({
       ...prev,
@@ -116,8 +141,8 @@ const PackageDetail = () => {
       setIsBookingLoading(true);
       
       await bookingService.createBooking({
-        packageId: travelPackage._id,
-        selectedServices: includedServices,
+        package: travelPackage._id,
+        services: includedServices,
         totalPrice,
       });
       
@@ -279,7 +304,6 @@ const PackageDetail = () => {
               </div>
             </div>
             
-            {/* Pricing and Booking Column */}
             <div>
               <Card className="sticky top-24">
                 <CardContent className="p-6 space-y-6">
@@ -287,36 +311,39 @@ const PackageDetail = () => {
                     <h3 className="text-xl font-bold">Price Summary</h3>
                     <div className="flex justify-between border-b pb-2">
                       <span className="text-gray-600">Base Price</span>
-                      <span>${travelPackage.basePrice}</span>
+                      <span>₹{travelPackage.basePrice}</span>
                     </div>
                     
                     {includedServices.food && travelPackage.services.food && (
                       <div className="flex justify-between border-b pb-2">
                         <span className="text-gray-600">Food</span>
-                        <span>+${travelPackage.basePrice * 0.2}</span>
+                        <span>+₹{travelPackage.basePrice * 0.2}</span>
                       </div>
                     )}
                     
                     {includedServices.accommodation && travelPackage.services.accommodation && (
                       <div className="flex justify-between border-b pb-2">
                         <span className="text-gray-600">Accommodation</span>
-                        <span>+${travelPackage.basePrice * 0.3}</span>
+                        <span>+₹{travelPackage.basePrice * 0.3}</span>
                       </div>
                     )}
                     
                     <div className="flex justify-between pt-2">
                       <span className="font-bold">Total Price</span>
-                      <span className="font-bold text-xl text-travel-blue">${totalPrice}</span>
+                      <span className="font-bold text-xl text-travel-blue">₹{totalPrice}</span>
                     </div>
                   </div>
                   
-                  <Button 
-                    className="w-full" 
-                    size="lg" 
-                    onClick={handleBookNow}
-                  >
+                 
+                {existingBooking ? (
+                  <Button className="w-full" size="lg" disabled>
+                    Already Booked
+                  </Button>
+                ) : (
+                  <Button className="w-full" size="lg" onClick={handleBookNow}>
                     Book Now
                   </Button>
+                )}
                   
                   <p className="text-xs text-gray-500 text-center">
                     By booking, you agree to our terms and conditions.
@@ -358,7 +385,7 @@ const PackageDetail = () => {
             </div>
             <div className="flex justify-between font-bold">
               <span>Total Price:</span>
-              <span className="text-travel-blue">${totalPrice}</span>
+              <span className="text-travel-blue">₹{totalPrice}</span>
             </div>
           </div>
           

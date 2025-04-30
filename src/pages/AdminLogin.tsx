@@ -35,7 +35,7 @@ type AdminLoginFormValues = z.infer<typeof adminLoginSchema>;
 
 const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { adminLogin } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -50,7 +50,7 @@ const AdminLogin = () => {
   const onSubmit = async (data: AdminLoginFormValues) => {
     try {
       setLoading(true);
-      await login(data.email, data.password, true); // Added true for isAdminLogin
+      await adminLogin(data.email, data.password, true); 
       navigate('/admin');
     } catch (error: any) {
       console.error('Admin login error', error);

@@ -151,7 +151,7 @@ const ManagePackages = () => {
                     <TableCell>{pkg.to}</TableCell>
                     <TableCell>{formatDate(pkg.startDate)}</TableCell>
                     <TableCell>{formatDate(pkg.endDate)}</TableCell>
-                    <TableCell>${pkg.basePrice}</TableCell>
+                    <TableCell>₹{pkg.basePrice}</TableCell>
                     <TableCell>
                       <Badge
                         className={`${

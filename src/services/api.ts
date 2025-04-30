@@ -37,14 +37,15 @@ export const authService = {
   register: (userData: any) => api.post('/auth/register', userData),
   login: (credentials: any) => api.post('/auth/login', credentials),
   googleLogin: (token: string) => api.post('/auth/google', { token }),
+  adminLogin: (credentials: any) => api.post('/auth/adminlogin', credentials ),
 };
 
 export const userService = {
   getProfile: () => api.get('/users/me'),
+  getUsers: () => api.get('/users/getallusers'),
   updateProfile: (userData: any) => api.put('/users/me', userData),
 };
 
-// Package services
 export const packageService = {
   getAllPackages: (params?: any) => api.get('/packages', { params }),
   getPackageById: (id: string) => api.get(`/packages/${id}`),
@@ -53,9 +54,9 @@ export const packageService = {
   deletePackage: (id: string) => api.delete(`/packages/${id}`),
 };
 
-// Booking services
 export const bookingService = {
   getAllBookings: () => api.get('/bookings'),
+  getUserBookings: () => api.get('/bookings/my'),
   getBookingById: (id: string) => api.get(`/bookings/${id}`),
   createBooking: (bookingData: any) => api.post('/bookings', bookingData),
   updateBooking: (id: string, bookingData: any) => api.put(`/bookings/${id}`, bookingData),

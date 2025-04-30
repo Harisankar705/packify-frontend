@@ -45,7 +45,6 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      {/* Hero Section */}
       <div className="relative">
         <div className="absolute inset-0 bg-black opacity-60 z-10"></div>
         <div 
@@ -67,7 +66,6 @@ const Index = () => {
         </div>
       </div>
       
-      {/* Featured Packages */}
       <div className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -103,7 +101,6 @@ const Index = () => {
         </div>
       </div>
       
-      {/* Call to Action */}
       <div className="bg-[#2D2942] py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white">Ready for your next adventure?</h2>
@@ -111,9 +108,7 @@ const Index = () => {
             Sign up now to receive exclusive offers and updates on new travel packages.
           </p>
           <div className="mt-8">
-            <Button asChild variant="secondary" size="lg" className="mr-4 bg-[#FFC344] hover:bg-[#FFC344]/90 text-[#2D2942]">
-              <a href="/register">Sign Up Now</a>
-            </Button>
+            
             <Button asChild variant="outline" className="bg-transparent text-white border-white hover:bg-white/10">
               <a href="/packages">Explore Packages</a>
             </Button>
@@ -121,61 +116,7 @@ const Index = () => {
         </div>
       </div>
       
-      {/* Destinations Section */}
-      <div className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[#2D2942]">Popular Destinations</h2>
-            <p className="mt-4 text-xl text-gray-600">
-              Explore these amazing locations
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="relative overflow-hidden rounded-lg h-80 group">
-              <img
-                src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-                alt="Paris"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold text-white">Paris</h3>
-                  <p className="text-white/80">France</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="relative overflow-hidden rounded-lg h-80 group">
-              <img
-                src="https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-                alt="Venice"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold text-white">Venice</h3>
-                  <p className="text-white/80">Italy</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="relative overflow-hidden rounded-lg h-80 group">
-              <img
-                src="https://images.unsplash.com/photo-1559628233-100c798642d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-                alt="Santorini"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold text-white">Santorini</h3>
-                  <p className="text-white/80">Greece</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
       
       <Footer />
     </div>

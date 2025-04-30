@@ -13,8 +13,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { User } from '@/types';
+import { userService } from '@/services/api';
 
-// Mocked user data since user management is not in API
 const mockUsers: User[] = [
   {
     _id: '1',
@@ -63,15 +63,14 @@ const UsersOverview = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate API call with setTimeout
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        // In a real app, this would be an API call
-        setTimeout(() => {
-          setUsers(mockUsers);
-          setLoading(false);
-        }, 1000);
+        const response=await userService.getUsers();
+        console.log("RESPONSE",response)
+        setUsers(response.data);
+        setLoading(false)
+       
       } catch (error) {
         console.error('Error fetching users:', error);
         setLoading(false);
@@ -89,14 +88,12 @@ const UsersOverview = () => {
       .toUpperCase();
   };
 
-  const adminCount = users.filter(user => user.role === 'admin').length;
   const userCount = users.filter(user => user.role === 'user').length;
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Users Overview</h1>
       
-      {/* Status Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-2">
@@ -109,14 +106,11 @@ const UsersOverview = () => {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-gray-500">Roles</CardTitle>
+            <CardTitle className="text-sm text-gray-500">Users</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex space-x-4">
-              <div>
-                <span className="text-sm text-gray-500">Admins: </span>
-                <span className="font-bold">{adminCount}</span>
-              </div>
+             
               <div>
                 <span className="text-sm text-gray-500">Customers: </span>
                 <span className="font-bold">{userCount}</span>
@@ -126,7 +120,6 @@ const UsersOverview = () => {
         </Card>
       </div>
       
-      {/* Users Table */}
       <Card>
         <CardHeader>
           <CardTitle>All Users</CardTitle>
@@ -143,7 +136,6 @@ const UsersOverview = () => {
                   <TableRow>
                     <TableHead>User</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Address</TableHead>
                     <TableHead>Role</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -164,7 +156,6 @@ const UsersOverview = () => {
                         </div>
                       </TableCell>
                       <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.address || 'Not provided'}</TableCell>
                       <TableCell>
                         <Badge
                           variant={user.role === 'admin' ? 'default' : 'secondary'}
