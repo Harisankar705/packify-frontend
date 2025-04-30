@@ -24,7 +24,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { GoogleAuth } from '@/utils/googleAuth';
 
 const registerSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
@@ -59,7 +58,7 @@ const Register = () => {
       setLoading(true);
       const { name, email, password } = data;
       await registerUser({ name, email, password });
-      navigate('/');
+      navigate('/login');
     } catch (error) {
       console.error('Registration error', error);
     } finally {
