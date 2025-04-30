@@ -5,7 +5,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND,
   withCredentials: true, 
 });
-
+console.log(import.meta.env.VITE_BACKEND)
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
