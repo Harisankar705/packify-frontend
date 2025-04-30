@@ -1,9 +1,9 @@
 node_modules/
-.env
-.env.local
-dist/.env
-.env.development
-.env.test
-.env.production
 dist/
+build/
+
 .env
+.env.*
+
+.DS_Store
+.vscode/
